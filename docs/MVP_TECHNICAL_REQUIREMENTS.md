@@ -1,250 +1,312 @@
 # MVP Technical Requirements
 
-> **The first objective is to validate the business model — not to build a platform.**
->
-> Every hour spent on architecture is an hour not spent talking to dietitians. The MVP exists to make the weekly loop run for 50–100 customers with one operations coordinator in the middle. Nothing more.
-
----
+> **The first objective is to validate the business model — not to build a large platform.** The MVP exists to make the weekly loop run for 50–100 customers with one operations coordinator in the middle.
 
 ## 1. Engineering Principles
 
-**Do not over-engineer.** This is a hard constraint, not a preference.
+**Do not over-engineer.** This is a hard constraint.
 
 | Principle | What it means here |
 |---|---|
-| **One application, four surfaces** | A single codebase with role-based access. Not microservices, not four apps, not a monorepo of packages. |
-| **Boring, proven stack** | Nothing chosen for interest. Every technology should be one the team can debug at 22:00 on a Saturday. |
-| **Manual is a feature** | If a human can do it in 10 minutes a week, do not automate it in Phase 1. Manual steps reveal the real process. |
-| **Web everywhere** | Responsive web for all four surfaces. No native apps. Couriers use mobile web. |
-| **Turkish first** | Turkish UI, Turkish phone formats, Turkish addressing, Turkish payment rails, TL. |
-| **Build for 100 customers** | Not 10,000. Scaling problems we do not have are the cheapest problems to ignore. |
-| **Instrument the metrics** | The metrics in [`UNIT_ECONOMICS.md`](./UNIT_ECONOMICS.md) §8 must be queryable from day one. This is the one place to be rigorous — the pilot's entire output is data. |
+| **One application, four surfaces** | A single web codebase with role-based access: customer, dietitian, operations, courier. |
+| **Customer app is core** | The customer-facing product is not optional. It owns the customer relationship, plan visibility, basket approval, delivery state, and payment experience. |
+| **Dietitian software is a free professional tool** | The dashboard is a core acquisition/retention product for dietitians, not a paid SaaS add-on in Phase 1. |
+| **Manual is a feature** | Suppliers and some courier operations can use WhatsApp while volume is low. |
+| **Web first** | Responsive web/PWA for all four surfaces. Native mobile apps are not required in Phase 1. |
+| **Turkish first** | Turkish UI, phone/address conventions, TL and Turkish payment rails. |
+| **Build for 100 customers** | Do not solve scaling problems before the pilot creates them. |
+| **Instrument the metrics** | Retention, repeat orders, delivery economics, complaints and partner activation must be queryable from day one. |
 
-**The build budget is 2 weeks** (weeks 3–4 of [`VALIDATION_PLAN.md`](./VALIDATION_PLAN.md)). Any requirement that does not fit is deferred, not compressed.
-
----
+**Build budget:** approximately 2 weeks after discovery. Anything that does not help prove the pilot hypothesis is deferred.
 
 ## 2. Architecture Overview
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    ONE WEB APPLICATION                       │
-│                  (role-based routing/access)                 │
-├──────────────┬──────────────┬──────────────┬─────────────────┤
-│  CUSTOMER    │  DIETITIAN   │  OPERATIONS  │    COURIER      │
-│  responsive  │  desktop-    │  desktop     │  mobile web     │
-│  mobile web  │  first       │  internal    │  (one-hand use) │
-└──────────────┴──────────────┴──────────────┴─────────────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │     BACKEND       │
-                    │  users • orders   │
-                    │  subscriptions    │
-                    │  payments         │
-                    │  partners         │
-                    └─────────┬─────────┘
-                              │
-        ┌──────────┬──────────┼──────────┬──────────┐
-        ▼          ▼          ▼          ▼          ▼
-   ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
-   │Postgres│ │  PSP   │ │  SMS   │ │  Maps  │ │ Object │
-   │        │ │(iyzico/│ │        │ │        │ │ store  │
-   │        │ │ PayTR) │ │        │ │        │ │(photos)│
-   └────────┘ └────────┘ └────────┘ └────────┘ └────────┘
+```text
+┌────────────────────────────────────────────────────────────────────┐
+│                         ONE WEB APPLICATION                         │
+├────────────────┬────────────────┬─────────────────┬─────────────────┤
+│    CUSTOMER    │   DIETITIAN    │   OPERATIONS    │     COURIER     │
+│ mobile-first   │ desktop-first  │ internal        │ mobile-first    │
+│ core product   │ free tool      │ control plane   │ route + SoftPOS │
+└────────────────┴────────────────┴─────────────────┴─────────────────┘
+                                  │
+                          ┌───────▼────────┐
+                          │    BACKEND     │
+                          │ users • plans  │
+                          │ baskets • orders│
+                          │ payments       │
+                          │ deliveries     │
+                          └───────┬────────┘
+                                  │
+             ┌────────────────────┼─────────────────────┐
+             ▼                    ▼                     ▼
+        PostgreSQL          Payment provider       SMS / Maps
 ```
 
-**Why a single application:** four surfaces share the same core entities (customers, plans, orders, deliveries). Splitting them means synchronising state across services for zero benefit at this scale.
-
----
+A single application is appropriate because all surfaces share customers, plans, orders, payments and delivery state.
 
 ## 3. Recommended Stack
 
-Chosen for delivery speed and operability by a very small team. Any equivalent the team already knows well is a valid substitute — **familiarity beats optimality here**.
+| Layer | Recommendation |
+|---|---|
+| Framework | Next.js App Router |
+| Language | TypeScript |
+| UI | Tailwind CSS + shadcn/ui |
+| Database | PostgreSQL |
+| ORM | Drizzle or Prisma — choose the familiar one |
+| Auth | Phone/SMS OTP for customers/couriers; email/password for professionals/ops |
+| Payment | Turkish PSP with SoftPOS/mobile acceptance and a settlement API suitable for Nuvia's model; provider capability must be validated before implementation |
+| SMS | Local Turkish SMS provider |
+| Maps | Google Maps Platform |
+| Hosting | Vercel |
+| File storage | Vercel Blob or equivalent for delivery evidence |
+| Error tracking | Sentry |
+| Analytics | Postgres queries + internal metrics page |
 
-| Layer | Recommendation | Why |
-|---|---|---|
-| Framework | **Next.js (App Router)** | One codebase for UI and API; server components reduce client complexity; fast to ship |
-| Language | **TypeScript** | Shared types between surfaces prevents a whole class of bug at zero cost |
-| UI | **Tailwind CSS + shadcn/ui** | Four surfaces at speed without designing a system |
-| Database | **PostgreSQL** (Neon via Vercel Marketplace) | Relational data, relational model. Nothing here wants a document store. |
-| ORM | **Drizzle** or **Prisma** | Either is fine; pick the one the team knows |
-| Auth | **Phone + SMS OTP** for customers and couriers; **email + password** for dietitians and ops | Turkish customers expect phone auth; couriers will not manage passwords |
-| Payments | **iyzico** or **PayTR** | Turkish PSPs with card storage and recurring support. Validate rates and settlement terms before choosing. |
-| SMS | Local Turkish SMS provider | Notification backbone; more reliable than push in Phase 1 |
-| Maps | **Google Maps Platform** | Best Turkish address and geocoding coverage; needed for pins and route links |
-| Hosting | **Vercel** | Deploy speed; no infrastructure work |
-| File storage | **Vercel Blob** | Delivery photos only |
-| Error tracking | **Sentry** | |
-| Analytics | Postgres queries + a simple ops metrics page | Do not add an analytics platform for 100 customers |
-
-**Deliberately excluded from Phase 1:** native mobile apps, real-time infrastructure (WebSockets), a message queue, a separate route-optimisation service, a data warehouse, Kubernetes or containers, microservices, GraphQL, a design system, i18n framework (Turkish only), and a CMS.
-
----
+Native apps, microservices, queues, Kubernetes, GraphQL, a separate route-optimisation service and a data warehouse are out of scope.
 
 ## 4. Backend Scope
 
 ### 4.1 User Management
-- Four roles: `customer`, `dietitian`, `operations`, `courier`
-- Registration via invite code (customers) or ops-created account (dietitian, courier, ops)
-- Phone/SMS OTP and email/password authentication
-- Role-based access enforced server-side on every request
-- Profile management per role
-- **Access boundaries:** a dietitian sees only their own clients; a courier sees only today's assigned stops with masked phone numbers; ops sees everything; a customer sees only themselves
+
+- Roles: `customer`, `dietitian`, `operations`, `courier`, `supplier`.
+- Customer onboarding primarily via dietitian/gym invitation.
+- Role-based access enforced server-side.
+- Dietitian sees only their clients.
+- Courier sees only assigned deliveries, delivery notes and the minimum customer data required for the route.
+- Supplier access may remain ops-managed in Phase 1 rather than requiring a supplier portal.
 
 ### 4.2 Nutrition Plans
-- Plan templates owned by a dietitian, cloneable per client
-- Plan structure: days → meals → items with quantities
-- Item catalogue mapping plan foods to purchasable supplier products with purchase units
-- Per-client constraints: allergies, dislikes, household size, budget band
-- Plan versioning — enough to know which plan produced which basket
 
-### 4.3 Orders
-- Weekly basket generation from a plan (scheduled job, Thursday 09:00)
-- Purchase-unit rounding, never below plan requirement
-- Unmatched-item flagging for manual resolution
-- Dietitian review and confirmation
-- Customer approval, swap within allowed alternatives, or skip
-- Hard cutoff enforcement (Friday 18:00)
-- Order states: `generated → dietitian_confirmed → customer_approved → paid → preparing → out_for_delivery → delivered` (plus `skipped`, `cancelled`, `failed`)
-- Per-supplier pick-list aggregation across all approved orders
+- Dietitian-owned plan templates.
+- Days → meals → food items → quantities/units.
+- Per-customer constraints: allergies, dislikes, household size, budget band.
+- Plan versioning.
+- Mapping from plan food to purchasable supplier products.
+- The nutrition decision remains with the dietitian; Nuvia handles execution and logistics.
 
-### 4.4 Subscriptions
-- Weekly recurrence as the default state
-- Pause, skip a single week, resume, cancel — all self-service
-- Delivery window and address preferences
-- Cancellation reason capture (**required** — this is a primary pilot output)
+### 4.3 Basket Generation
 
-### 4.5 Payments
-- Card charge on approval, via PSP hosted flow (no card data touches our systems)
-- Saved card token for recurring weeks
-- Cash-on-delivery flag with courier-side collection recording
-- Retry on failure, then notify, then remove from route
-- Refunds, partial refunds, and goodwill credits
-- Dietitian commission accrual on delivery confirmation, monthly payout report
-- Reconciliation view: orders vs charges vs settlements
+- Weekly basket generated from the active plan.
+- Purchase-unit rounding without dropping below the plan requirement.
+- Unmatched product flagging for manual resolution.
+- Dietitian reviews and confirms the basket.
+- Customer sees the generated basket and can approve, skip, or select a dietitian-approved alternative.
+- The basket is intentionally **not** a general grocery marketplace.
 
-### 4.6 Partner Management
-- Dietitians: profile, clients, commission rate, order history, payouts
-- Suppliers: contact, product catalogue with prices, pickup times, quality complaint log
-- Couriers: profile, availability, assigned routes, payment records, performance
-- Fitness centres: referral tracking, revenue share basis
+### 4.4 Orders
 
-### 4.7 Delivery & Routing
-- Delivery-day scheduling
-- Geographic clustering of approved orders
-- Manual route assembly with a nearest-neighbour ordering assist
-- Courier assignment and route publication (Saturday 10:00)
-- Stop-level delivery confirmation, photo upload, failure reason codes
-- Cash collection recording and end-of-day reconciliation
+Phase 1 order states:
 
-### 4.8 Notifications
+```text
+generated
+→ dietitian_confirmed
+→ customer_approved
+→ preparing
+→ out_for_delivery
+→ delivered
+→ paid
+→ settled
+```
+
+Operational/payment exception states:
+
+```text
+skipped
+cancelled
+payment_failed
+payment_refused
+delivery_failed
+partially_refunded
+fully_refunded
+manual_review
+```
+
+The important distinction is that **customer approval and customer payment are separate states**. Approval commits the order to the route; payment occurs at delivery via courier SoftPOS.
+
+### 4.5 Subscriptions
+
+- Weekly recurring plan.
+- Customer can pause, skip one week, resume and cancel.
+- Subscription generates the next basket automatically.
+- No automatic customer charge before delivery in Phase 1.
+- Capture cancellation reason.
+
+### 4.6 Payments
+
+**Confirmed Phase 1 UX:**
+
+```text
+Customer approves basket
+        ↓
+No payment yet
+        ↓
+Supplier prepares order
+        ↓
+Courier picks up order
+        ↓
+Courier arrives
+        ↓
+Customer sees package
+        ↓
+Courier accepts card payment via SoftPOS
+        ↓
+Payment succeeds
+        ↓
+Delivery/payment recorded
+        ↓
+Settlement process begins
+```
+
+Requirements:
+
+- Courier-side SoftPOS payment initiation.
+- Payment result tied to the exact order ID.
+- Customer sees the amount due in the app.
+- No card data stored by Nuvia.
+- Payment receipt/reference stored.
+- Payment failure state and controlled retry flow.
+- Settlement ledger for supplier(s), courier, dietitian and Nuvia shares.
+- No Nuvia-built wallet or escrow mechanism.
+- Exact acquiring/settlement architecture must be confirmed with an authorised Turkish payment provider before production.
+
+### 4.7 Dietitian Dashboard
+
+This is a **P0 product**, not an administrative afterthought.
+
+- Client management.
+- Plan creation and templates.
+- Weekly basket review.
+- Client adherence signals.
+- Retention view.
+- Order history.
+- Commission ledger.
+- Client invitation flow.
+
+The dashboard is free for active partners in Phase 1. The commercial incentive is primarily client retention and professional tooling; approximately 5% commission on completed orders is secondary.
+
+### 4.8 Customer Application
+
+The customer application is the primary consumer product.
+
+P0:
+
+- Registration/login.
+- Dietitian connection.
+- Profile and delivery address with mandatory map pin.
+- Current nutrition plan viewing.
+- Weekly basket view with itemised prices.
+- Basket approval / skip.
+- Delivery window.
+- Order status.
+- Payment-due-at-delivery status.
+- Delivery tracking on delivery day.
+- Subscription pause/skip/resume/cancel.
+- Payment/SoftPOS receipt history.
+- Direct support entry.
+
+P1:
+
+- Weight/progress tracking visible to the dietitian.
+- Adherence streak.
+
+The app should make Nuvia feel like the customer's **lifestyle system**, not like a grocery store.
+
+### 4.9 Delivery & Routing
+
+- Delivery-day scheduling.
+- Geographic clustering.
+- Manual route assembly with a simple distance heuristic.
+- Courier assignment.
+- Route publication before the shift.
+- Supplier pickup checklist.
+- Stop confirmation.
+- Delivery exception codes.
+- SoftPOS transaction confirmation at the stop.
+
+The courier must see the route, time windows and expected route pay before starting.
+
+### 4.10 Notifications
+
 | Trigger | Channel | Recipient |
 |---|---|---|
-| Basket ready for approval | SMS | Customer |
-| Approval cutoff reminder | SMS | Customer |
-| Payment failed | SMS | Customer |
-| Out for delivery | SMS | Customer |
-| Delivered | SMS | Customer |
-| Route published | SMS | Courier |
-| Clients awaiting basket confirmation | Email | Dietitian |
-| Weekly summary | Email | Dietitian |
+| Basket ready | SMS + in-app | Customer |
+| Approval cutoff reminder | SMS + in-app | Customer |
+| Order accepted | In-app | Customer |
+| Courier en route | SMS + in-app | Customer |
+| Payment completed | In-app + receipt | Customer |
+| Route published | SMS/in-app | Courier |
+| Client action required | Email/in-app | Dietitian |
+| Weekly summary | Email/in-app | Dietitian |
 
-### 4.9 Metrics
-Every Tier 1 and Tier 2 metric from [`UNIT_ECONOMICS.md`](./UNIT_ECONOMICS.md) §8, queryable and shown on a single ops metrics page. Cohort retention by signup week and by acquiring dietitian is **required**, not optional — the pilot's conclusions depend on it.
-
----
-
-## 5. Data Model (Entities)
-
-Described as entities and key fields, not as schema. Implementation detail belongs in the codebase, not here.
+## 5. Data Model
 
 | Entity | Key fields |
 |---|---|
 | `user` | id, role, phone, email, name, created_at, status |
 | `customer_profile` | user_id, address, geo point, delivery notes, preferred window, allergies, dislikes, household size, dietitian_id, acquisition channel |
 | `dietitian_profile` | user_id, clinic, commission rate, status, signed_at |
-| `courier_profile` | user_id, vehicle type, availability, status |
-| `supplier` | id, name, category, contact, pickup window, status |
-| `product` | id, supplier_id, name, unit, purchase unit size, price, spec notes |
+| `courier_profile` | user_id, vehicle, availability, status |
+| `supplier` | id, name, category, contact, pickup window, settlement terms, status |
+| `product` | id, supplier_id, name, unit, purchase-unit size, price, spec notes |
 | `plan_template` | id, dietitian_id, name, structure |
 | `plan` | id, customer_id, dietitian_id, template_id, version, active_from |
 | `plan_item` | plan_id, day, meal, food, quantity, unit, product_id |
-| `order` | id, customer_id, week, state, total, approved_at, cutoff_at, skip_reason |
-| `order_item` | order_id, product_id, quantity, unit price, line total, substituted_from |
+| `order` | id, customer_id, week, state, total, approved_at, delivery_at |
+| `order_item` | order_id, product_id, quantity, unit_price, line_total, substituted_from |
 | `subscription` | customer_id, state, paused_until, cancelled_at, cancellation_reason |
-| `payment` | order_id, method, state, psp_reference, amount, refunded_amount |
-| `commission` | dietitian_id, order_id, amount, payout_id |
-| `route` | id, delivery_date, courier_id, state, stop count, courier_payment |
-| `delivery` | route_id, order_id, sequence, window, state, delivered_at, photo_url, failure_reason |
+| `payment` | order_id, method, state, PSP reference, amount, receipt reference |
+| `settlement` | order_id, beneficiary_type, beneficiary_id, amount, state, released_at, provider_reference |
+| `commission` | dietitian_id, order_id, amount, settlement_id |
+| `route` | id, delivery_date, courier_id, state, stop_count, courier_payment |
+| `delivery` | route_id, order_id, sequence, window, state, delivered_at, payment_confirmed_at, failure_reason |
 | `complaint` | order_id, product_id, supplier_id, type, description, resolution, resolved_at |
-| `progress_entry` | customer_id, date, weight, measurements |
-
----
+| `progress_entry` | customer_id, date, weight, optional measurements |
 
 ## 6. Build Order
 
-Sequenced so the loop can be tested manually before it is complete. **Nothing here is worth building out of order.**
+1. Auth, roles and user records.
+2. Dietitian dashboard: clients and plan creation.
+3. Customer onboarding, profile and plan viewing.
+4. Product catalogue and pricing.
+5. Basket generation from real dietitian plans.
+6. Customer basket approval and skip flow.
+7. Operations order board.
+8. Delivery assignment and route view.
+9. Courier mobile interface.
+10. SoftPOS/payment integration.
+11. Settlement/reconciliation ledger.
+12. Notifications and support.
+13. Metrics/cohort page.
+14. P1 progress tracking.
 
-| # | Deliverable | Why first |
-|---|---|---|
-| 1 | Auth, roles, user records | Everything depends on it |
-| 2 | Ops dashboard: customer, supplier, courier records | Ops can run the business by hand from here |
-| 3 | Product catalogue and pricing | Baskets cannot be priced without it |
-| 4 | Dietitian: clients, plan templates, plan creation | The demand source |
-| 5 | Basket generation from plan | The core mechanic — build and test with real plans |
-| 6 | Customer: registration, profile, basket approval | Closes the demand loop |
-| 7 | Payment integration | Real money, real signal |
-| 8 | Supplier pick-list aggregation | Removes the largest manual ops burden |
-| 9 | Route building and courier assignment | |
-| 10 | Courier interface | Last, because ops can dispatch by WhatsApp until it exists |
-| 11 | Notifications | |
-| 12 | Metrics page and cohort queries | Must exist before the first customer is served |
-| 13 | Progress tracking | P1 — ship if time allows |
+The payment integration should be implemented only after provider validation. Do not code against an assumed settlement API.
 
-**If the two-week budget runs out at step 9,** the pilot can still run: dispatch couriers by WhatsApp with a printed route. It cannot run without steps 1–8.
+## 7. Phase 1 Shortcuts
 
----
-
-## 7. Acceptable Shortcuts
-
-Explicitly sanctioned for Phase 1. Each is a conscious trade, not an accident.
-
-| Shortcut | Rationale | Revisit at |
-|---|---|---|
-| WhatsApp for supplier pick lists | Suppliers will not log into a portal | Phase 2 |
-| WhatsApp deeplink for customer support | Faster than building a ticketing system | 250+ customers |
-| Manual route sequencing | Optimisation is not the bottleneck at 10–20 stops | Phase 2 |
-| Manual courier payouts | 3 couriers, weekly | 10+ couriers |
-| Manual commission payouts | 10 dietitians, monthly | 30+ dietitians |
-| Spreadsheet supplier catalogue import | The catalogue is small and changes rarely | Phase 2 |
-| No inventory tracking | We hold no inventory in Phase 1 | Phase 2 (mandatory) |
-| SMS instead of push | No app; SMS is more reliable in this market | When a native app exists |
-| Single delivery day hard-coded | It genuinely is single | Second delivery day |
-| Ops metrics page over an analytics platform | 100 customers | Phase 2 |
-
----
+- WhatsApp supplier pick lists.
+- Manual supplier price updates.
+- Manual route sequencing.
+- Manual courier payout reconciliation if the provider cannot automate it.
+- Manual dietitian commission payout reporting.
+- No inventory system because Nuvia does not hold inventory.
+- No native mobile apps.
+- No public product marketplace.
 
 ## 8. Non-Functional Requirements
 
 | Area | Requirement |
 |---|---|
-| Performance | Page load under 2s on 4G. Customers approve baskets on phones, often outdoors. |
-| Availability | Best-effort. A few minutes of downtime on a Tuesday costs nothing; downtime Thursday–Sunday costs a week. Avoid deploys Thursday 08:00 → Sunday 18:00. |
-| Mobile | Customer and courier surfaces are mobile-first. The courier interface must be usable one-handed. |
-| Offline | Courier interface should tolerate brief connectivity loss and queue delivery confirmations. |
-| Security | Server-side authorisation on every request; no card data stored; masked phone numbers for couriers; audit trail on order and payment state changes |
-| Privacy | KVKK-compliant consent at signup; minimum necessary data; documented retention policy (see [`RISKS_AND_MITIGATION.md`](./RISKS_AND_MITIGATION.md) Risk 12) |
-| Backups | Daily automated Postgres backups; verify a restore once before launch |
-| Observability | Sentry for errors; structured logs on order state transitions and payment events |
-
----
+| Performance | Customer basket approval should feel fast on 4G. |
+| Mobile | Customer and courier interfaces mobile-first. Courier UI usable one-handed. |
+| Security | Server-side authorisation; no card data stored by Nuvia; least-privilege partner access; audit trail for order/payment/settlement state changes. |
+| Privacy | KVKK requirements confirmed with local advisor; minimum necessary personal data. |
+| Reliability | Avoid deployments around the weekly operational window. |
+| Offline tolerance | Courier app should tolerate brief connectivity loss and safely retry delivery/payment callbacks. |
+| Observability | Structured logs for order, payment, delivery and settlement transitions. |
 
 ## 9. Out of Scope for Phase 1
 
-Recorded so they are not re-litigated mid-build:
+Native mobile apps, recipes, macro/calorie logging, food photo diaries, social/community features, gamification, in-app dietitian chat, public marketplace browsing, customer-created baskets, multi-city support, automated route optimisation, ML recommendations, microservices, GraphQL, data warehouse, Kubernetes and third-party integrations beyond the validated payment/SMS/maps stack.
 
-**Product:** native apps, recipes and cooking instructions, calorie/macro logging, photo food diaries, in-app dietitian chat, social or community features, gamification, referral programs, multiple addresses, gift subscriptions, a public marketplace, customer-driven product browsing.
-
-**Technical:** microservices, GraphQL, real-time infrastructure, message queues, automated route optimisation, ML/recommendation systems, a data warehouse, multi-tenancy, multi-city support, i18n beyond Turkish, a public API, third-party integrations beyond PSP/SMS/maps, mobile push, A/B testing infrastructure.
-
-**Rule:** anything on this list needs a written justification tied to a Phase 1 success metric before it is reconsidered.
+**Customer application and dietitian dashboard are explicitly NOT out of scope. They are core Phase 1 surfaces.**
