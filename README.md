@@ -1,6 +1,6 @@
-# Nutrition Lifestyle Network
+# Nuvia Platform
 
-> **Working title.** A localized nutrition logistics platform connecting dietitians, fitness centres, customers, local suppliers, and delivery partners.
+> **Working title.** A localized nutrition logistics platform connecting dietitians, fitness centres, customers, local suppliers, and planned delivery partners.
 >
 > **Pilot location:** Atakum, Samsun, Turkey.
 
@@ -10,148 +10,239 @@
 
 > ### We are not a fast delivery company. We are a planned nutrition logistics network.
 
-This sentence is the constraint on every product, operational, and hiring decision that follows. Speed is not our product. Consistency is.
-
----
+Speed is not the product. **Consistency is.** Nuvia closes the gap between a professional nutrition plan and actually having the required food at home.
 
 ## What This Is
 
-People do not fail at healthy eating because they lack a plan. They fail in the gap between the plan and the plate — the shopping, the portioning, the daily decisions. Within three weeks the effort collapses, the results stall, the dietitian loses a client, and the customer concludes that "diets do not work for me."
+People often do not need another nutrition plan. The difficult part is executing the plan repeatedly: shopping, sourcing, portioning, remembering what to buy, and keeping the routine alive.
 
-**Nobody owns that gap.** It looks like a healthcare problem. It is a logistics problem.
+Nuvia connects the professional plan to the physical supply chain:
 
-We build the infrastructure that closes it:
-
+```text
+Dietitian / fitness professional
+            ↓
+     Personalized plan
+            ↓
+      Nuvia basket
+            ↓
+ Local suppliers prepare
+            ↓
+ Planned courier route
+            ↓
+ Customer receives package
+            ↓
+ Customer pays via SoftPOS
+            ↓
+ Settlement + next week's plan
 ```
-Professional guidance  ──┐
-Personalized plans     ──┤
-Automated supply       ──┼──►  A habit that survives past week three
-Planned delivery       ──┤
-Long-term formation    ──┘
+
+The customer is not expected to behave like a grocery shopper. The professional defines the plan; Nuvia handles the execution layer.
+
+---
+
+## The Product Is Two-Sided
+
+### Customer application
+
+The customer app is a **core Phase 1 product**, not a later convenience feature. It is the customer's digital home for the lifestyle program:
+
+- dietitian relationship;
+- nutrition plan;
+- weekly basket;
+- approval/skip;
+- delivery status;
+- payment-at-delivery status;
+- SoftPOS receipt/history;
+- subscription controls;
+- later, progress/adherence.
+
+The customer approves the basket before preparation but **pays when the package reaches them**, using the courier's SoftPOS device. This is designed to reduce the uncertainty of paying before seeing the physical package.
+
+### Dietitian professional tool
+
+The dietitian dashboard is also a **core Phase 1 product and free for pilot partners**.
+
+It lets professionals:
+
+- manage clients;
+- create reusable nutrition plans;
+- review generated baskets;
+- see adherence/retention signals;
+- follow client order history;
+- earn approximately 5% on completed eligible orders.
+
+The primary pitch is **not commission**. It is:
+
+> **A free tool that helps you manage clients, turn plans into actionable weekly baskets, and keep clients engaged.**
+
+This creates the core acquisition flywheel:
+
+```text
+Dietitian joins for free tooling
+        ↓
+Adds clients
+        ↓
+Creates plans
+        ↓
+Clients enter Nuvia app
+        ↓
+Weekly baskets are executed
+        ↓
+Customers reorder
+        ↓
+Dietitian gets retention + adherence visibility + commission
+        ↓
+Dietitian keeps using Nuvia
 ```
 
-A dietitian writes a plan. The system turns it into a weekly basket. The customer approves rather than decides. Local suppliers prepare and portion it. An independent courier delivers it on a planned route at a known time. The customer eats to plan, sees results, and keeps going — and the dietitian, the gym, the supplier, and the courier all do better because of it.
+Nuvia does not make clinical/nutritional decisions. The dietitian owns the professional plan; Nuvia owns execution and logistics.
 
 ---
 
 ## Why Atakum
 
-| Reason | Detail |
-|---|---|
-| **Income distribution** | The strongest income profile in the Samsun metropolitan area — a 1,500–2,000 TL weekly food budget is achievable, not aspirational |
-| **University population** | Ondokuz Mayıs University drives a young, health-literate, digitally native base plus academic households |
-| **Active fitness culture** | Dense concentration of gyms, trainers, and independent dietitians already selling transformation |
-| **Right size for a pilot** | Compact residential density makes planned multi-stop routes viable at low customer counts — the whole delivery economics argument depends on this |
+Atakum is the initial **working hypothesis for the best pilot density**, based on its residential, university and fitness characteristics. Income distribution and willingness to pay must be validated rather than treated as proven facts.
+
+The pilot deliberately remains inside one district because route density is central to the economics.
 
 ---
 
-## The Participants
+## Participants
 
 | Participant | Gives | Gets |
 |---|---|---|
-| **Customer** | Weekly subscription | Personalized supply, plan-matched portions, near-zero decision load, visible results |
-| **Dietitian** | Plans and clients | Client retention, better outcomes, adherence data, ~5% commission |
-| **Fitness centre** | Member referrals | A complete transformation product, member results, higher-tier packages |
-| **Local supplier** | Prepared, portioned goods | Predictable weekly volume, zero acquisition cost, one prompt payer |
-| **Courier** | Planned route delivery | Known route, known pay, no idle waiting — before the shift starts |
-| **Platform** | Coordination | Recurring revenue, forecastable demand, route density |
+| **Customer** | Weekly commitment + delivery-time payment | Plan-linked supply, low decision load, predictable delivery |
+| **Dietitian** | Professional plan + clients | Free software, retention/adherence visibility, ~5% completed-order commission |
+| **Fitness centre** | Member referrals | A complete transformation support layer |
+| **Local supplier** | Prepared/portioned goods | Predictable weekly volume and short, agreed settlement cycle |
+| **Courier** | Planned route delivery + SoftPOS acceptance | Known route, stops, time windows and expected pay |
+| **Nuvia** | Coordination + customer relationship | Platform margin and recurring demand |
 
-**No participant profits from a customer who quits.** That alignment is the model.
+The model works when every participant has a reason to support **customer continuity**.
 
 ---
 
-## Roadmap at a Glance
+## Roadmap
 
-| Phase | Horizon | Question it answers | Model |
+| Phase | Horizon | Question | Model |
 |---|---|---|---|
-| **1 — Atakum Pilot** | Months 0–6 | Will customers reorder a plan-linked package? | Supplier + courier network |
-| **2 — Micro Fulfilment** | Months 6–18 | Can we control cost and quality at volume? | Centralised inventory |
-| **3 — Nutrition Production** | Months 18–36 | Will customers buy prepared personalised meals? | Production company |
-| **4 — Network Expansion** | Months 36+ | Does the playbook transfer? | Multi-city |
+| **1 — Atakum Pilot** | Months 0–6 | Will customers reorder plan-linked baskets and will partners keep using Nuvia? | Local suppliers + planned couriers |
+| **2 — Micro Fulfilment** | Months 6–18 | Can we control cost and quality at volume? | Wholesale + central fulfilment |
+| **3 — Nutrition Production** | Months 18–36 | Will customers buy prepared personalised meals? | Nutrition production company |
+| **4 — Network Expansion** | Months 36+ | Can the playbook transfer? | Local network replication |
 
-**Phase 1 targets:** 10 dietitian partners · 2–3 fitness centres · 50–100 active customers · 2–3 couriers · 2–4 suppliers · one district only.
+**Phase 1 target:** 10 dietitian partners · 2–3 fitness centres · 50–100 active customers · 2–3 couriers · 2–4 suppliers · Atakum only.
 
-**Phase 1 is not a profit phase.** It exists to produce one piece of evidence: that customers reorder.
+Phase 1 is intentionally a validation phase, not a maximum-profit phase.
 
 ---
 
 ## Documentation
 
-The `/docs` directory is the source of truth for this project. Read in this order.
+The `/docs` directory is the source of truth.
 
-| # | Document | What it covers |
+| # | Document | Purpose |
 |---|---|---|
-| 1 | **[PROJECT_OVERVIEW.md](./docs/PROJECT_OVERVIEW.md)** | Problem statement, market opportunity, vision, mission, why this is not grocery delivery, long-term roadmap |
-| 2 | **[BUSINESS_MODEL.md](./docs/BUSINESS_MODEL.md)** | All five participants in detail, the win-win structure, revenue streams, defensibility, assumptions to validate |
-| 3 | **[PRODUCT_ROADMAP.md](./docs/PRODUCT_ROADMAP.md)** | Phase 1 feature scope across all four surfaces; Phase 2 fulfilment centre; Phase 3 production company |
-| 4 | **[UNIT_ECONOMICS.md](./docs/UNIT_ECONOMICS.md)** | Cost breakdown per package, route density economics, break-even, LTV/CAC, metric definitions, assumption register |
-| 5 | **[PARTNER_ACQUISITION.md](./docs/PARTNER_ACQUISITION.md)** | How to find and sign dietitians, gyms, couriers, and suppliers — channels, pitches, onboarding, tracking |
-| 6 | **[OPERATIONS.md](./docs/OPERATIONS.md)** | The weekly operating calendar, every workflow stage, supplier management, quality control, support |
-| 7 | **[RISKS_AND_MITIGATION.md](./docs/RISKS_AND_MITIGATION.md)** | Twelve risks with mitigations, early-warning indicators, and kill signals |
-| 8 | **[MVP_TECHNICAL_REQUIREMENTS.md](./docs/MVP_TECHNICAL_REQUIREMENTS.md)** | Architecture, stack, backend scope, data model, build order, sanctioned shortcuts, out-of-scope list |
-| 9 | **[VALIDATION_PLAN.md](./docs/VALIDATION_PLAN.md)** | The 8-week pilot: discovery, build, run, success criteria, decision framework |
+| 1 | **[PROJECT_OVERVIEW.md](./docs/PROJECT_OVERVIEW.md)** | Problem, opportunity, vision and positioning |
+| 2 | **[BUSINESS_MODEL.md](./docs/BUSINESS_MODEL.md)** | Participants, incentives, revenue model and assumptions |
+| 3 | **[PRODUCT_ROADMAP.md](./docs/PRODUCT_ROADMAP.md)** | Product surfaces and Phase 1–4 evolution |
+| 4 | **[UNIT_ECONOMICS.md](./docs/UNIT_ECONOMICS.md)** | Package economics, delivery economics and assumptions |
+| 5 | **[PARTNER_ACQUISITION.md](./docs/PARTNER_ACQUISITION.md)** | Dietitian, gym, supplier and courier acquisition |
+| 6 | **[OPERATIONS.md](./docs/OPERATIONS.md)** | Weekly operating workflow |
+| 7 | **[PAYMENT_AND_SETTLEMENT.md](./docs/PAYMENT_AND_SETTLEMENT.md)** | SoftPOS delivery payment and settlement model |
+| 8 | **[RISKS_AND_MITIGATION.md](./docs/RISKS_AND_MITIGATION.md)** | Risks, mitigations and kill signals |
+| 9 | **[MVP_TECHNICAL_REQUIREMENTS.md](./docs/MVP_TECHNICAL_REQUIREMENTS.md)** | Architecture and MVP build scope |
+| 10 | **[VALIDATION_PLAN.md](./docs/VALIDATION_PLAN.md)** | Discovery, pilot and go/no-go criteria |
 
 ---
 
-## Core Numbers
+## Phase 1 Payment Model
 
-| | |
-|---|---|
-| Weekly package price | 1,500–2,000 TL |
-| Phase 1 contribution margin | ~9.5% (deliberately thin) |
-| Food cost | ~70% of package price |
-| Cost per delivery | ~120 TL at 10 stops · ~97 TL at 15 stops |
-| Break-even | ~55–75 active customers |
-| Dietitian commission | ~5% of completed orders |
-| Pilot duration | 8 weeks |
-| Expected pilot cost | ~150,000 TL |
+```text
+Customer approves basket
+        ↓
+Supplier prepares
+        ↓
+Courier collects from supplier(s)
+        ↓
+Courier delivers
+        ↓
+Customer sees package
+        ↓
+Customer pays via courier SoftPOS
+        ↓
+Payment confirmed
+        ↓
+Settlement process starts
+```
 
-Full model and every assumption: [UNIT_ECONOMICS.md](./docs/UNIT_ECONOMICS.md).
+The supplier must explicitly agree to release the order before customer payment. Nuvia's target is a short settlement window (approximately 30 minutes) after successful payment, subject to the actual PSP/banking capabilities and commercial agreement.
+
+Nuvia should use an authorised payment provider for the regulated payment flow. It should not build its own wallet or informal escrow mechanism.
+
+---
+
+## Core Pilot Hypotheses
+
+1. Customers value a plan-linked basket enough to reorder weekly.
+2. Customers prefer seeing the package before paying and accept courier SoftPOS.
+3. Suppliers will release small, approved orders before customer payment in exchange for a reliable short settlement cycle.
+4. Planned routes create better courier economics than ad-hoc instant delivery.
+5. Dietitians will adopt a free client-management/planning tool when it improves continuity and reduces execution friction.
+6. Local supplier pricing can keep Phase 1 economics viable without owning inventory.
+7. Atakum provides sufficient customer density for a controlled pilot.
+
+Every hypothesis must be replaced by measured evidence during the pilot.
 
 ---
 
 ## Success Criteria for Phase 1
 
-The pilot proceeds to Phase 2 only if all four hold:
+The pilot proceeds to Phase 2 only if the core evidence supports:
 
-1. **Customers reorder** — ≥40% of week-1 customers still active at week 4
-2. **Dietitians keep using it** — ≥5 actively generating orders in the final month
-3. **Delivery economics work** — cost per delivery ≤130 TL, contribution ≥0
-4. **Customer feedback is positive** — complaint rate <3%, ≥70% would recommend
+- meaningful week-1 → week-4 customer retention;
+- at least 5 dietitians actively generating orders in the final month;
+- non-negative contribution at the target customer density;
+- acceptable quality/complaint rates;
+- suppliers willing to continue the pre-payment release + short-settlement arrangement;
+- customers accepting delivery-time SoftPOS payment.
 
-A stop is a valid outcome. The pilot is designed to answer the question cheaply, in either direction.
+A stop is a valid outcome. The pilot exists to answer the question cheaply.
 
 ---
 
 ## Guiding Principles
 
-1. **Validate before building.** Every phase falsifies one specific assumption.
-2. **Adherence is the product.** Revenue is a lagging indicator of adherence.
-3. **The dietitian is a partner, not a sales channel.** If a feature makes their practice worse, we do not ship it.
-4. **Local first.** Local suppliers, local couriers, local trust — a defensibility strategy, not sentiment.
-5. **Do not over-engineer.** Software not needed to prove the pilot hypothesis is a liability.
+1. **Validate before building.**
+2. **Adherence is the product.**
+3. **The dietitian is a professional partner, not merely a sales channel.**
+4. **The customer app owns the customer relationship.**
+5. **Local first.**
+6. **Predictability beats speed.**
+7. **Do not over-engineer.**
+8. **The dietitian owns clinical decisions; Nuvia owns execution.**
 
-**The test for every proposed feature:** does this increase the number of consecutive weeks a customer eats according to their plan? If not, it is out of scope.
+**The test for every feature:** does it help the weekly plan → basket → delivery → continuation loop? If not, it is probably out of scope.
 
 ---
 
 ## Project Status
 
-**Stage:** Pre-pilot. Documentation foundation complete.
+**Stage:** Pre-pilot. Documentation foundation in progress.
 
-**No application code has been written.** The next step is Weeks 1–2 of [VALIDATION_PLAN.md](./docs/VALIDATION_PLAN.md) — partner interviews, supplier discovery, and courier interviews — which must correct the assumption register before the MVP build begins.
+**No application code has been written.** The immediate work is validation: partner interviews, real supplier pricing, courier economics, payment-provider feasibility and customer price testing.
 
 ### Immediate next actions
 
-- [ ] Build the Atakum dietitian target list (Google Maps + Instagram), 40+ entries
-- [ ] Book 20 dietitian conversations
-- [ ] Visit 8–10 potential suppliers; **price 5 real nutrition plans** — this validates or kills the margin assumption
-- [ ] Interview 6–8 couriers; correct the 700 TL + 50 TL/stop rate assumption
-- [ ] Price-test 1,500 / 1,750 / 2,000 TL with 10–15 potential customers
-- [ ] Get PSP quotes (iyzico, PayTR)
-- [ ] Confirm the Phase 1 regulatory and KVKK position with a local advisor
-- [ ] Hold the Week 2 go/no-go review before writing any code
+- [ ] Build Atakum dietitian target list
+- [ ] Book dietitian conversations
+- [ ] Price 5 real nutrition plans with local suppliers
+- [ ] Interview couriers and validate planned-route rates
+- [ ] Price-test the weekly package with potential customers
+- [ ] Validate SoftPOS + settlement capabilities with Turkish PSPs
+- [ ] Confirm regulatory/KVKK position with a local advisor
+- [ ] Hold go/no-go review before MVP build
 
 ---
 
-*This documentation is the source of truth for the project. When the docs and reality disagree, update the docs.*
+*When the docs and reality disagree, update the docs.*
