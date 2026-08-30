@@ -1,12 +1,13 @@
 # Product Roadmap
 
-Three phases, each with one question to answer. A phase does not start until the previous phase's question is answered with evidence.
+Three operating phases, each with one question to answer. A phase does not start until the previous phase's question is answered with evidence.
 
-| Phase | Horizon | Question being answered | Model |
+| Phase | Horizon | Question | Model |
 |---|---|---|---|
-| **1 — Atakum Pilot** | Months 0–6 | Will customers reorder a plan-linked package? | Supplier + courier network |
-| **2 — Micro Fulfilment** | Months 6–18 | Can we control cost and quality at volume? | Centralised inventory |
-| **3 — Nutrition Production** | Months 18–36 | Will customers buy prepared personalised meals? | Production company |
+| **1 — Atakum Pilot** | Months 0–6 | Will customers repeatedly buy plan-linked baskets, and will professional partners keep using Nuvia? | Local suppliers + planned courier network |
+| **2 — Micro Fulfilment** | Months 6–18 | Can we control cost and quality at volume? | Centralised inventory + fulfilment |
+| **3 — Nutrition Production** | Months 18–36 | Will customers buy prepared personalised meals? | Nutrition production company |
+| **4 — Network Expansion** | Months 36+ | Can the operating playbook transfer to new districts/cities? | Local network replication |
 
 ---
 
@@ -14,225 +15,337 @@ Three phases, each with one question to answer. A phase does not start until the
 
 ## Goal
 
-Validate the business model with a small, controlled operation. **This phase is not about growth or profit.** It is about producing evidence that the loop closes: plan → order → delivery → payment → reorder.
+Validate the complete weekly loop:
 
-Anything that does not produce that evidence is out of scope.
+```text
+Dietitian plan
+→ basket
+→ customer approval
+→ supplier preparation
+→ planned pickup
+→ courier delivery
+→ SoftPOS payment at the door
+→ supplier/courier/dietitian settlement
+→ reorder
+```
+
+Phase 1 is not about maximum profit. It is about proving that the loop creates repeat behaviour and that every participant has a reason to stay.
 
 ## Targets
 
-| Target | Number | Rationale |
-|---|---|---|
-| Dietitian partners | 10 signed, 5+ actively generating orders | 10 signed is realistic for Atakum; the meaningful number is how many actually use it |
-| Fitness centre partners | 2–3 | Enough to test the channel without diluting focus |
-| Active customers | 50–100 | Below 50 route density is untestable; above 100 manual operations break |
-| Delivery partners (couriers) | 2–3 | 2 covers the routes, the 3rd is redundancy |
-| Suppliers | 2–4 | Deliberately few — quality control over catalogue breadth |
-| Districts | 1 (Atakum only) | Density is the entire delivery economics argument |
+| Target | Number |
+|---|---:|
+| Dietitian partners | 10 signed; 5+ actively generating orders |
+| Fitness centre partners | 2–3 |
+| Active customers | 50–100 |
+| Couriers | 2–3 |
+| Suppliers | 2–4 |
+| Districts | Atakum only |
 
-## Success Criteria (gate to Phase 2)
+## Success Criteria
 
-- ≥40% of customers who complete week 1 also complete week 4
-- ≥5 dietitians generating orders in the final month without prompting
-- Contribution margin per delivery ≥ 0 at ≥60 active customers
-- Quality complaint rate <5% of deliveries
-- Net customer sentiment positive in structured week-8 interviews
-
-Full measurement plan: [`VALIDATION_PLAN.md`](./VALIDATION_PLAN.md).
+- ≥40% of week-1 customers complete week 4.
+- ≥5 dietitians actively generate orders in the final month without repeated prompting.
+- Contribution margin per delivery ≥0 at ≥60 active customers.
+- Quality complaint rate <5% of deliveries.
+- Customer sentiment is positive in structured week-8 interviews.
+- Supplier partners accept the short settlement model and continue releasing approved orders.
+- Customers demonstrate acceptance of **payment at delivery via SoftPOS**.
 
 ---
 
-## Phase 1 Features
+# Phase 1 Product Surfaces
 
-Four surfaces. Everything below is scoped to the minimum that makes the loop work. Technical detail: [`MVP_TECHNICAL_REQUIREMENTS.md`](./MVP_TECHNICAL_REQUIREMENTS.md).
+Nuvia has four product surfaces. Two are customer-facing/professional products and two are operational.
 
-### 1. Customer Application
+```text
+                         NUVIA
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+      CUSTOMER         DIETITIAN          OPS
+        APP             DASHBOARD       DASHBOARD
+          │                │                │
+          └────────────────┼────────────────┘
+                           │
+                       COURIER
+                       INTERFACE
+```
 
-| Feature | Description | Priority |
-|---|---|---|
-| **Registration** | Phone/SMS or email signup. Invite code from a dietitian or gym is the primary entry path. | P0 |
-| **Profile** | Name, delivery address (with map pin — Atakum addressing is inconsistent), phone, allergies/intolerances, dislikes, household size, preferred delivery window. | P0 |
-| **Dietitian connection** | Link to the dietitian who invited them; see who their professional is. One dietitian per customer in Phase 1. | P0 |
-| **Nutrition plan viewing** | Read-only view of the current plan: weekly meal structure, what to eat when. Not a plan editor. | P0 |
-| **Weekly package approval** | The core interaction. See the generated basket (items, quantities, price), swap flagged items within allowed alternatives, approve or skip the week. Hard cutoff time. | P0 |
-| **Payment** | Card payment per weekly package via a Turkish PSP. Saved card for recurring weeks. Clear itemised price. | P0 |
-| **Order tracking** | Status: approved → preparing → out for delivery → delivered. Delivery window, courier contact on delivery day. | P0 |
-| **Subscription management** | Pause a week, skip a week, change delivery window, change address, cancel. Self-service — never a phone call. | P0 |
-| **Progress tracking** | Weight and optional body measurements, simple chart, visible to their dietitian. Adherence streak (consecutive weeks). | P1 |
-| Notifications | SMS/push: basket ready for approval, approval cutoff reminder, out for delivery, delivered. | P0 |
-| In-app support | One button to reach operations (WhatsApp deeplink is acceptable in Phase 1). | P1 |
+## 1. Customer Application — Core Product
 
-**Explicitly out of scope in Phase 1:** recipes, calorie/macro logging, photo food diaries, social features, gamification, chat with dietitian (they already have WhatsApp), multi-address, gifting, referral programs.
+The customer application is **P0 and mandatory** in Phase 1. It is not a generic grocery-shopping interface.
 
-### 2. Dietitian Dashboard
+Its purpose is to become the customer's digital home for the new lifestyle they are building with their dietitian/fitness professional.
 
-| Feature | Description | Priority |
-|---|---|---|
-| **Customer management** | Add a client (generates an invite), see all clients, status per client (active / pending / paused / churned), client detail view. | P0 |
-| **Nutrition plan creation** | Build a weekly plan: meals per day, foods and quantities per meal. Save as a reusable template; clone and adjust per client. Template library is what makes this fast enough to actually be used. | P0 |
-| **Order generation** | Convert a plan into a weekly basket: system proposes the item list and quantities from the plan, dietitian reviews and confirms, order is sent to the customer for approval. | P0 |
-| **Customer retention analytics** | Per client: consecutive weeks, approval rate, skipped weeks, last delivery, progress trend. Practice-level: active clients, average client lifespan, churn list. This is the screen that proves our value proposition to them. | P0 |
-| **Commission tracking** | Earned per completed order, monthly total, payout status and history. | P0 |
-| Adherence signals | Which clients skipped this week, which have not approved before cutoff. A short daily action list. | P1 |
-| Bulk actions | Generate orders for all clients at once. Essential once a dietitian passes ~15 clients. | P1 |
+### P0
 
-### 3. Operations Dashboard
+| Feature | Purpose |
+|---|---|
+| Registration/login | Low-friction onboarding from a dietitian or gym invite |
+| Profile | Identity, address/map pin, allergies/intolerances, dislikes, household size, delivery preferences |
+| Dietitian connection | Make the professional relationship visible and persistent |
+| Nutrition plan | Show the current plan in a simple, readable format |
+| Weekly basket | Show exactly what Nuvia will source, quantities and itemised price |
+| Basket approval | Customer approves or skips; alternatives only from dietitian-approved options |
+| Delivery window | Clear expected delivery day/window |
+| Order tracking | Preparing → out for delivery → delivered |
+| Payment state | Clearly show **“Payment due at delivery”** before the courier arrives |
+| Delivery-day payment | Show exact amount due and payment confirmation after courier SoftPOS transaction |
+| Subscription controls | Pause, skip, resume, cancel |
+| Receipts/history | Past orders and payment references |
+| Support | Direct route to Nuvia operations |
 
-Internal. The most important surface in Phase 1 — it is where the business is actually run.
+### P1
 
-| Feature | Description | Priority |
-|---|---|---|
-| **Order management** | All orders for the week by state. Manual intervention on any order. Flag problems. | P0 |
-| **Supplier coordination** | Aggregate all approved baskets into a per-supplier pick list (e.g. "Butcher: 42kg chicken breast in 180g portions"). Export/print/WhatsApp-able. Confirm supplier acceptance and readiness. | P0 |
-| **Delivery assignment** | Assign orders to couriers and delivery days. See load per courier. | P0 |
-| **Route planning** | Cluster deliveries geographically, order the stops, produce a route with addresses and time windows. Phase 1 acceptable implementation: map view + manual sequencing with a distance heuristic. Full optimisation is Phase 2. | P0 |
-| Customer support view | Full context for one customer: orders, payments, deliveries, complaints. | P0 |
-| Payment reconciliation | Which orders are paid, failed, refunded. Supplier invoices, courier payouts, dietitian commissions. | P0 |
-| Basic metrics | Active customers, weekly orders, reorder rate, cost per delivery, complaint rate. The pilot scoreboard. | P0 |
-| Supplier & courier records | Contacts, terms, pricing, performance notes. A spreadsheet is acceptable at ≤4 suppliers. | P1 |
+- Progress tracking visible to the dietitian.
+- Adherence streak / consecutive weeks.
+- Simple weekly adherence summary.
 
-### 4. Courier Interface
+### Product principle
 
-Mobile web is sufficient. Do not build native apps in Phase 1.
+The customer should **not** have to behave like a shopper.
 
-| Feature | Description | Priority |
-|---|---|---|
-| **Delivery list** | Today's assigned deliveries, in route order, with total count and expected pay. Visible before the shift starts — this is the core of the courier value proposition. | P0 |
-| **Route information** | Ordered stop list, map link per stop, estimated duration. | P0 |
-| **Customer address** | Address, map pin, delivery notes (floor, buzzer, "call on arrival"), masked phone number. | P0 |
-| **Delivery confirmation** | Mark delivered; optional photo; failed-delivery reason codes. | P0 |
-| **Payment confirmation** | For cash-on-delivery orders: record amount collected. Prepaid orders show as already paid. | P0 |
-| Pickup checklist | Confirm collection from each supplier before starting the route. | P1 |
+```text
+Traditional grocery app:
+Customer decides → searches → compares → builds cart → pays
+
+Nuvia:
+Professional plans → Nuvia builds basket → customer reviews →
+customer approves → Nuvia delivers → customer pays at the door
+```
+
+The reduction in decision load is part of the product value.
+
+---
+
+## 2. Dietitian Dashboard — Free Professional Product
+
+The dietitian dashboard is also **P0**.
+
+In Phase 1, it is offered as a free professional tool to make Nuvia useful before the logistics revenue is large enough to matter.
+
+### P0
+
+| Feature | Purpose |
+|---|---|
+| Client management | Add/invite clients and see active/paused/churned state |
+| Nutrition plan creation | Create weekly plans and reusable templates |
+| Plan versioning | Know which plan produced each basket |
+| Basket review | Review/confirm the products and quantities generated from a plan |
+| Retention view | See consecutive weeks, skips, approvals and last delivery |
+| Action list | Identify clients who have not approved or are falling inactive |
+| Order history | See client orders and delivery status |
+| Commission ledger | Completed-order earnings, payout history and status |
+
+### P1
+
+- Bulk order generation.
+- More detailed adherence analytics.
+- Practice-level retention reporting.
+
+### Strategic purpose
+
+Nuvia should be presented to dietitians primarily as:
+
+> **A free tool that helps you manage clients, turn plans into actionable weekly baskets, and keep clients engaged.**
+
+The ~5% completed-order commission is a secondary incentive, not the primary pitch.
+
+The goal is to create a flywheel:
+
+```text
+Dietitian joins for free software
+        ↓
+Adds clients
+        ↓
+Creates plans in Nuvia
+        ↓
+Clients use Nuvia customer app
+        ↓
+Weekly baskets are generated
+        ↓
+Customers reorder
+        ↓
+Dietitian sees better continuity + earns commission
+        ↓
+Dietitian keeps Nuvia in their workflow
+```
+
+Nuvia does not make clinical/nutritional decisions on behalf of the dietitian. The professional owns the plan; Nuvia executes the supply and logistics layer.
+
+---
+
+## 3. Operations Dashboard
+
+The internal control plane.
+
+### P0
+
+- Weekly order board.
+- Supplier pick-list aggregation.
+- Supplier acceptance/readiness status.
+- Courier assignment.
+- Route assembly and time windows.
+- Customer support context.
+- Payment/settlement reconciliation.
+- Complaint and exception handling.
+- Pilot metrics.
+
+### P1
+
+- Supplier/courier performance history.
+- More automated route assistance.
+
+---
+
+## 4. Courier Interface
+
+Mobile web/PWA is sufficient in Phase 1.
+
+### P0
+
+- Today's route.
+- Stops in order.
+- Known addresses/map pins.
+- Delivery windows.
+- Supplier pickup checklist.
+- Expected route pay.
+- Customer delivery notes.
+- SoftPOS payment flow/reference.
+- Delivery confirmation.
+- Failure/refusal reporting.
+
+### Core courier value proposition
+
+The courier knows the route before starting work:
+
+```text
+Known stops
+Known addresses
+Known time windows
+Known route
+Known expected pay
+```
+
+Nuvia is not competing with instant-delivery platforms on speed. It is selling **predictability and route density**.
+
+---
+
+# Phase 1 Payment Model
+
+Customer payment is **not prepaid** in the standard flow.
+
+```text
+Customer approves basket
+        ↓
+Supplier prepares
+        ↓
+Courier collects goods
+        ↓
+Courier delivers
+        ↓
+Customer sees package
+        ↓
+Customer pays via courier SoftPOS
+        ↓
+Payment confirmed
+        ↓
+Settlement begins
+```
+
+The target is for the supplier's payable and other eligible shares to be settled automatically and quickly after successful payment. **~30 minutes is the operational target to negotiate/validate, not a guaranteed banking SLA.**
+
+The supplier must explicitly agree to release goods before customer payment under an agreed exposure/settlement policy.
+
+Detailed payment decisions belong in [`PAYMENT_AND_SETTLEMENT.md`](./PAYMENT_AND_SETTLEMENT.md).
 
 ---
 
 # Phase 2: Micro Fulfilment Centre
 
-## The Shift
+Move from multi-supplier pickup to a central facility.
 
-**From:** orders routed to multiple suppliers, each preparing per-order, courier collecting from several points.
+```text
+Phase 1:
+Supplier A ─┐
+Supplier B ─┼─> Courier ─> Customer
+Supplier C ─┘
 
-**To:** a single small facility that holds inventory, receives wholesale deliveries, portions and packs centrally, and dispatches from one point.
-
-```
-PHASE 1                              PHASE 2
-                                     
-Order ──┬─> Butcher ──┐              Wholesale ──> ┌─────────────┐
-        ├─> Chicken ──┼─> Courier    suppliers     │   MICRO     │
-        ├─> Market  ──┤   (multi-                  │ FULFILMENT  │──> Courier
-        └─> Grocer  ──┘    pickup)   Order ───────>│   CENTRE    │    (single
-                                                   │ stock•pack  │     pickup)
-Variable quality per supplier                      └─────────────┘
-Retail-ish pricing                                 Controlled quality
-Multi-stop pickup overhead                         Bulk pricing
+Phase 2:
+Wholesale suppliers → Micro fulfilment centre → Courier → Customer
 ```
 
-## Why
+Goals:
 
-**Bulk purchasing.** Buying weekly aggregate volume wholesale instead of order-by-order at supplier prices. This is the single largest margin lever available — a 15–25% COGS reduction is realistic and turns a thin Phase 1 contribution into a real one.
+- Wholesale purchasing.
+- Lower food cost.
+- Centralised portioning/packing.
+- Quality control.
+- Cold-chain control.
+- Single-origin courier routes.
+- Inventory and waste management.
 
-**Better margins.** Beyond purchase price: less waste through pooled inventory, no per-order supplier handling premium, and a courier route that starts at one location instead of four.
+Phase 2 is where Nuvia begins to exploit the demand forecast created by Phase 1.
 
-**Quality control.** We own portioning, packing, cold chain, and inspection. In Phase 1 quality is a supplier promise; in Phase 2 it is a process we run. This directly addresses the highest-severity Phase 1 risk.
+## Exit Criteria
 
-**Faster preparation.** Batch processing on our own schedule, decoupled from supplier opening hours. Same-day order changes become possible, and delivery windows tighten.
-
-## Requirements
-
-- Facility: small commercial unit in or near Atakum, ~80–150 m², with refrigeration and freezer capacity, hygiene-compliant, licensed for food handling
-- Staff: 2–4 fulfilment operators plus a supervisor
-- Systems: inventory management, stock levels and reorder points, wastage tracking, batch/lot traceability, goods-in inspection
-- Compliance: food business registration, hygiene certification, cold-chain records, staff health certificates
-- Capital: fit-out, refrigeration, packing equipment, initial working capital for inventory
-
-## New / Changed Software
-
-| Area | Change |
-|---|---|
-| Inventory | Stock levels, reorder points, expiry and batch tracking, wastage |
-| Purchasing | Demand forecast from approved baskets → purchase orders to wholesale suppliers |
-| Fulfilment | Pick-and-pack workflow, per-order packing checklist, barcode or label scanning |
-| Route planning | Real optimisation from one origin; time-window constraints |
-| Quality | Goods-in inspection records, complaint linkage back to batch |
-
-## Exit Criteria (gate to Phase 3)
-
-- COGS reduction ≥15% versus Phase 1 baseline
-- Quality complaint rate <2% of deliveries
-- Facility capable of 500+ weekly packages
-- Positive contribution margin at steady state
-- Route cost per delivery reduced ≥20% via single-origin dispatch
+- COGS reduction ≥15% versus Phase 1 baseline.
+- Quality complaint rate <2%.
+- Facility capable of 500+ weekly packages.
+- Positive steady-state contribution margin.
+- Route cost per delivery reduced ≥20% through single-origin dispatch.
 
 ---
 
 # Phase 3: Nutrition Production Company
 
-## The Shift
+Move from raw ingredient supply to prepared personalised meals.
 
-**From:** delivering raw ingredients that the customer cooks.
+The information advantage already exists:
 
-**To:** delivering prepared, personalised meals — while keeping raw supply available for customers who want to cook.
+```text
+Known customer
++ known dietitian
++ known plan
++ known weekly demand
+= predictable meal production demand
+```
 
-This is not a pivot away from the model; it is the model's natural end state. We already know, a week in advance, exactly what each customer is supposed to eat. Producing it is the highest-value thing we can do with that information.
+Product lines can include weight-management, muscle/performance and hybrid prepared + raw plans, subject to qualified professional oversight and applicable food regulations.
 
-## Product Lines
+The positioning remains:
 
-**Weight-loss meal plans.** Calorie- and portion-controlled full-day or partial-day meal sets, built from the customer's dietitian plan. High volume, high adherence sensitivity.
+> **Personalised nutrition infrastructure, not generic catering.**
 
-**Muscle-gain plans.** Protein-forward, higher-calorie meal sets with defined macro targets, structured around training days.
+## Exit Criteria
 
-**Performance nutrition packages.** Athlete and serious-trainee packages: pre/post-training nutrition, timing-specific meals, competition-period plans. Highest price point, strongest word-of-mouth in the fitness-centre channel.
-
-**Hybrid (expected to dominate).** Prepared lunches and dinners plus raw ingredients for breakfasts and snacks. Most customers do not want every meal handed to them — habit formation requires that they still cook some of the time.
-
-## Positioning
-
-**We are a personalised nutrition company, not a catering company.** The distinction is commercial, not cosmetic:
-
-| | Diet catering | Nutrition Lifestyle Network |
-|---|---|---|
-| Menu | Fixed weekly menu for everyone | Derived from the individual's plan |
-| Professional | None, or an in-house nutritionist | The customer's own dietitian |
-| Goal | Serve meals | Sustain a habit and produce a measurable outcome |
-| Data | None | Adherence and progress, fed back to the professional |
-| Relationship | Vendor | Part of the customer's health team |
-| Ends when | The customer gets bored | The customer reaches their goal — and often continues at maintenance |
-
-Catering is a commodity that competes on price and menu variety. We compete on personalisation and outcome, which is defensible and higher margin.
-
-## Requirements
-
-- Licensed production kitchen (upgrade or replacement of the Phase 2 facility)
-- Chefs, food production staff, a food safety officer
-- Menu R&D: a library of meals mapped to macro and calorie targets, and to plan constraints
-- Cold-chain distribution capable of prepared-meal safety standards
-- Full food-safety compliance and HACCP-equivalent process
-
-## New / Changed Software
-
-| Area | Change |
-|---|---|
-| Meal engine | Map a nutrition plan to producible meals meeting its macro/calorie constraints |
-| Production planning | Aggregate meal demand → production schedule, prep sheets, yield planning |
-| Recipe & BOM | Recipes, ingredient bills of materials, cost per meal, allergen matrix |
-| Traceability | Batch → meal → customer, for recall and complaint handling |
-| Dietitian tooling | Approve or adjust the meal mapping for their client; substitution rules |
-
-## Exit Criteria (gate to Phase 4 expansion)
-
-- Prepared-meal gross margin >35%
-- Prepared-meal line ≥40% of revenue
-- Multi-district operation stable in Samsun
-- A documented, repeatable city-launch playbook
-- Food safety record clean
+- Prepared-meal gross margin >35%.
+- Prepared-meal line ≥40% of revenue.
+- Multi-district operation stable in Samsun.
+- Repeatable city-launch playbook.
+- Clean food-safety record.
 
 ---
 
-# Phase 4: Network Expansion (Outline)
+# Phase 4: Network Expansion
 
-Replicate into Samsun districts (İlkadım, Canik, Tekkeköy), then comparable Anatolian cities of 300k–1M population with a compact residential core, a university, and an active fitness culture.
+Replicate the playbook into additional Samsun districts, then comparable cities.
 
-**What transfers:** software, the dietitian-partnership playbook, the route model, supplier standards and specs, the brand.
+What transfers:
 
-**What is rebuilt locally:** suppliers, couriers, dietitian relationships, the fulfilment facility. This is intentional — local trust is the moat, and it cannot be shipped from another city.
+- Software.
+- Brand.
+- Dietitian acquisition playbook.
+- Operating procedures.
+- Product specifications.
+- Courier model.
 
-**Launch sequence per city:** dietitian recruitment first, then suppliers, then couriers, then customers. Never launch a city before 5 active dietitians exist in it.
+What must be rebuilt locally:
+
+- Suppliers.
+- Couriers.
+- Dietitian relationships.
+- Fulfilment capacity.
+
+Local density and trust remain core to the model.
